@@ -2,12 +2,12 @@ package mysql
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"strconv"
 	"github.com/mixnote/mixnote-api-go/src/framework/database/contracts"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
+	"os"
+	"strconv"
 )
 
 type mySql struct {
@@ -49,6 +49,12 @@ func New() (mysql *mySql) {
 }
 
 func (m *mySql) ConnectDB() (*gorm.DB, error) {
-	fmt.Printf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)
-	return gorm.Open(mysql.Open(fmt.Sprintf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)))
+	dns := (func() string {
+		if m.DATABASE_URL != "" {
+			return m.DATABASE_URL
+		} else {
+			return fmt.Sprintf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)
+		}
+	})()
+	return gorm.Open(mysql.Open(dns))
 }
