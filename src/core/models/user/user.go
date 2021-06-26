@@ -1,14 +1,15 @@
 package user
 
 import (
-	"github.com/mixnote/mixnote-api-go/core/models/contracts"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type (
 	User struct {
-		contracts.IUser
 		gorm.Model
+
+		ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 		FName string
 		LName string
 		Email string
@@ -17,7 +18,7 @@ type (
 )
 
 func New() (u *User) {
-	u = &User{
-	}
+	u = &User{}
 	return
 }
+
