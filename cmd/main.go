@@ -14,7 +14,6 @@ import (
 )
 
 var DB *gorm.DB
-var action string
 var argHelper helper.ArgHelper = helper.New()
 
 var banner string = `
@@ -82,7 +81,7 @@ func main() {
 		})())
 
 	default:
-		if cmd != "help" {
+		if cmd != "help" && len(os.Args) > 1 {
 			fmt.Println("Unrecognized command : " + os.Args[1])
 		}
 		switch argHelper.Option("opt1") {
@@ -95,7 +94,7 @@ func main() {
 		case "version":
 			helpVersion()
 		default:
-			fmt.Println("Unknown command: mixnote help <command> ")
+			fmt.Println(message)
 		}
 		os.Exit(0)
 	}
