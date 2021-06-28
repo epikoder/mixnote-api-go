@@ -9,7 +9,6 @@ import (
 	app "github.com/mixnote/mixnote-api-go/src"
 	"github.com/mixnote/mixnote-api-go/src/framework/database"
 
-	// "github.com/mixnote/mixnote-api-go/src/framework/server"
 	"gorm.io/gorm"
 )
 

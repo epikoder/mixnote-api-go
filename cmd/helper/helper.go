@@ -17,8 +17,10 @@ type (
 )
 
 var map_ map[string]string
+
 func init() {
 	map_ = make(map[string]string)
+	map_["cmd"] = "serve"
 	for i := 1; i < len(os.Args); i++ {
 		val := os.Args[i]
 		if i == 1 {
@@ -34,18 +36,18 @@ func init() {
 		}
 
 		// for help commands
-		map_["opt" + strconv.Itoa(i - 1)] = val
+		map_["opt"+strconv.Itoa(i-1)] = val
 	}
 }
 
-func New() (arghelper ArgHelper){
+func New() (arghelper ArgHelper) {
 	return
 }
 
 func stripeOptions(str string) (key string, val string) {
-	key, val = (func () (string, string) {
+	key, val = (func() (string, string) {
 		arr := strings.Split(str, "=")
-		key = strings.TrimPrefix(arr[0], "--") 
+		key = strings.TrimPrefix(arr[0], "--")
 		val = arr[1]
 		return key, val
 	})()
@@ -61,4 +63,4 @@ func (argv ArgHelper) Option(option string) (s string) {
 		panic("Access to commands not allowed from option")
 	}
 	return map_[option]
-} 
+}

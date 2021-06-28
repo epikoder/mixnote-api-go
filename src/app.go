@@ -6,7 +6,6 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/mixnote/mixnote-api-go/src/framework/router"
-	"github.com/mixnote/mixnote-api-go/src/routes/api"
 	"gorm.io/gorm"
 )
 
@@ -38,6 +37,5 @@ func DatabasePath() string {
 }
 
 func StartServer(host string, port int) {
-	api.RegisterRoutes(server.GetRouter())
 	server.Serve(host, port)
 }
