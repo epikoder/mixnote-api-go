@@ -21,5 +21,8 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 		db, err = sqlite3.New().ConnectDB()
 	}
 
+	if err != nil {
+		panic("Error connecting to database")
+	}
 	return
 }

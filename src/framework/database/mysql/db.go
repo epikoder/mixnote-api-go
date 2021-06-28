@@ -5,7 +5,6 @@ import (
 	"github.com/mixnote/mixnote-api-go/src/framework/database/contracts"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"os"
 	"strconv"
 )
@@ -33,18 +32,14 @@ func New() (mysql *mySql) {
 		port := os.Getenv("DB_PORT")
 		if port != "" {
 			return strconv.Atoi(port)
-		} else {
-			return 3306, nil
 		}
+		return 3306, nil
 	})()
 
 	if err != nil {
-		log.Fatalln("Invalid database port")
-		panic(1)
+		panic("Invalid database port")
 	}
 	mysql.DB_PORT = port
-
-	fmt.Printf("%s:%s@tcp(%s)/%s", mysql.DB_USERNAME, mysql.DB_PASSWORD, mysql.DB_HOST, mysql.DB_NAME)
 	return
 }
 
@@ -52,9 +47,8 @@ func (m *mySql) ConnectDB() (*gorm.DB, error) {
 	dns := (func() string {
 		if m.DATABASE_URL != "" {
 			return m.DATABASE_URL
-		} else {
-			return fmt.Sprintf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)
 		}
+		return fmt.Sprintf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)
 	})()
 	return gorm.Open(mysql.Open(dns))
 }

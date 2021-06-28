@@ -3,7 +3,11 @@ package app
 import (
 	"fmt"
 	"os"
+
 	"github.com/joho/godotenv"
+	"github.com/mixnote/mixnote-api-go/src/framework/router"
+	"github.com/mixnote/mixnote-api-go/src/routes/api"
+	"gorm.io/gorm"
 )
 
 var __PATH__ , _ = os.Getwd()
@@ -21,7 +25,7 @@ func loadEnv() {
 	}
 }
 
-func RegisterBindings() {
+func RegisterBindings(db *gorm.DB) {
 	
 }
 
@@ -33,3 +37,7 @@ func DatabasePath() string {
 	return __DB_PATH__
 }
 
+func StartServer(host string, port int) {
+	api.RegisterRoutes(server.GetRouter())
+	server.Serve(host, port)
+}

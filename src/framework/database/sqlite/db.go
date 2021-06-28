@@ -21,7 +21,6 @@ func New() (sqlite *sqLite3) {
 	if sqlite.DATABASE_PATH == "" {
 		sqlite.DATABASE_PATH = app.DatabasePath()
 	}
-
 	return
 }
 

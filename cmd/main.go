@@ -2,26 +2,101 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"os"
+	"strconv"
 
+	"github.com/mixnote/mixnote-api-go/cmd/helper"
 	app "github.com/mixnote/mixnote-api-go/src"
-	"github.com/mixnote/mixnote-api-go/src/core/models/user"
 	"github.com/mixnote/mixnote-api-go/src/framework/database"
+
+	// "github.com/mixnote/mixnote-api-go/src/framework/server"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
-var err error
+var action string
+var argHelper helper.ArgHelper = helper.New()
+
+var banner string = `
+|\     /|  | \    /  |\      |  /------\ --------   /---
+| \   / |  |   \_/   |  \    |  | |--| |     |     /____|
+|  \/   |  |   / \   |    \  |  | |__| |     |    /-----|
+|       |  |  /    \ |      \|  \______/     |   /_______
+
+Mixnote is a audio platform for streaming, podcast and radio
+@author Efedua Believe @epikoder Github
+	`
+var message string = `
+usage: 
+mixnote <command> [arguments]
+
+Commands:
+	serve		Start the server
+	test		Run test
+	migrate		Run migration
+	help		Show help message
+	version		Show version information
+	
+Use "mixnote help <command>" for more information about a command.
+	`
 
 func init() {
-	app.RegisterBindings()
-	DB, err = database.DBConnection("")
-	if err != nil {
-		log.Fatalln("Error connecting to database")
-	}
+	DB, _ = database.DBConnection("")
+	app.RegisterBindings(DB)
+	fmt.Println(banner)
 }
 
+func helpServe() {
+	fmt.Println(`
+Usage:
+mixnote serve [argument1] [argument2]
+
+arguments: 
+	--host=HOST		Server host default is localhost [127.0.0.1]
+	--port=PORT		Server port default is :8080
+
+	`)
+}
+
+func helpTest()    {}
+func helpMigrate() {}
+func helpVersion() {}
+
 func main() {
-	user := user.New()
-	fmt.Println(&user)
+	cmd := argHelper.Command()
+	switch cmd {
+	case "migrate":
+		break
+
+	case "serve":
+		app.StartServer(argHelper.Option("host"), (func() int {
+			_port := argHelper.Option("port")
+			if _port != "" {
+				port, err := strconv.Atoi(_port)
+				if err != nil {
+					panic("Invalid port address")
+				}
+				return port
+			}
+			return 8080
+		})())
+
+	default:
+		if cmd != "help" {
+			fmt.Println("Unrecognized command : " + os.Args[1])
+		}
+		switch argHelper.Option("opt1") {
+		case "serve":
+			helpServe()
+		case "test":
+			helpTest()
+		case "migrate":
+			helpMigrate()
+		case "version":
+			helpVersion()
+		default:
+			fmt.Println("Unknown command: mixnote help <command> ")
+		}
+		os.Exit(0)
+	}
 }
