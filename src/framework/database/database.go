@@ -2,10 +2,8 @@ package database
 
 import (
 	"os"
-
-	"github.com/mixnote/mixnote-api-go/src/framework/database/mysql"
-	"github.com/mixnote/mixnote-api-go/src/framework/database/sqlite"
 	"gorm.io/gorm"
+	"github.com/mixnote/mixnote-api-go/src/framework/database/connections"
 )
 
 
@@ -16,9 +14,9 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 
 	switch connection {
 	case "mysql":
-		db, err = mysql.New().ConnectDB()
+		db, err = connections.MySql().ConnectDB()
 	default:
-		db, err = sqlite3.New().ConnectDB()
+		db, err = connections.SqLite3().ConnectDB()
 	}
 
 	if err != nil {

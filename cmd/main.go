@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/mixnote/mixnote-api-go/cmd/helper"
+	"github.com/mixnote/mixnote-api-go/cmd/migrate"
 	app "github.com/mixnote/mixnote-api-go/src"
 	"github.com/mixnote/mixnote-api-go/src/framework/database"
 
@@ -64,7 +65,8 @@ func main() {
 	cmd := argHelper.Command()
 	switch cmd {
 	case "migrate":
-		break
+		migrate.Migrate(false)
+		os.Exit(0)
 
 	case "serve":
 		app.StartServer(argHelper.Option("host"), (func() int {

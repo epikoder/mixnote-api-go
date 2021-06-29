@@ -1,16 +1,24 @@
-package mysql
+package connections
 
 import (
 	"fmt"
-	"github.com/mixnote/mixnote-api-go/src/framework/database/contracts"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"os"
 	"strconv"
+
+	app "github.com/mixnote/mixnote-api-go/src"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+type (
+	IDatabase interface {
+		ConnectDB()
+	}
 )
 
 type mySql struct {
-	contracts.IDatabase
+	IDatabase
 	DATABASE_URL string
 	DB_HOST      string
 	DB_PORT      int
@@ -19,7 +27,7 @@ type mySql struct {
 	DB_NAME      string
 }
 
-func New() (mysql *mySql) {
+func MySql() (mysql *mySql) {
 	mysql = &mySql{
 		DATABASE_URL: os.Getenv("DATABASE_URL"),
 		DB_HOST:      os.Getenv("DB_HOST"),
@@ -51,4 +59,24 @@ func (m *mySql) ConnectDB() (*gorm.DB, error) {
 		return fmt.Sprintf("%s:%s@tcp(%s)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_NAME)
 	})()
 	return gorm.Open(mysql.Open(dns))
+}
+
+
+type sqLite3 struct {
+	IDatabase
+	DATABASE_PATH string
+}
+
+func SqLite3() (sqlite *sqLite3) {
+	sqlite = &sqLite3{
+		DATABASE_PATH: os.Getenv("DATABASE_PATH"),
+	}
+	if sqlite.DATABASE_PATH == "" {
+		sqlite.DATABASE_PATH = app.DatabasePath()
+	}
+	return
+}
+
+func (sq *sqLite3) ConnectDB() (*gorm.DB, error) {
+	return gorm.Open(sqlite.Open(sq.DATABASE_PATH))
 }

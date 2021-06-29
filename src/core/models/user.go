@@ -1,4 +1,4 @@
-package user
+package models
 
 import (
 	"github.com/google/uuid"
@@ -10,14 +10,14 @@ type (
 		gorm.Model
 
 		ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-		FName string
-		LName string
+		FirstName string `json:"first_name"`
+		LastName string
 		Email string
 		Phone int
 	}
 )
 
-func New() (u *User) {
+func New_User() (u *User) {
 	u = &User{}
 	return
 }
