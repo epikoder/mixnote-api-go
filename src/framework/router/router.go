@@ -2,12 +2,12 @@ package server
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/mixnote/mixnote-api-go/src/framework/router/routes/api"
+	"github.com/mixnote/mixnote-api-go/src/framework/router/routes/web"
 )
 
 var host string = "127.0.0.1"
@@ -30,7 +30,7 @@ func init() {
 	}
 }
 
-func GetRouter() (*echo.Echo) {
+func GetRouter() *echo.Echo {
 	return echo_
 }
 
@@ -44,8 +44,6 @@ func Serve(_host string, _port int) {
 	}
 
 	api.RegisterRoutes(echo_)
-	echo_.GET("", func(c echo.Context) error {
-		return c.String(http.StatusOK, "")
-	})
+	web.RegisterRoutes(echo_)
 	echo_.Logger.Fatal(echo_.Start(fmt.Sprintf("%s:%d", host, port)))
 }
