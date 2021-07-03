@@ -65,7 +65,7 @@ func main() {
 	cmd := argHelper.Command()
 	switch cmd {
 	case "migrate":
-		migrate.Migrate(false)
+		migrate.Migrate()
 		os.Exit(0)
 
 	case "serve":
