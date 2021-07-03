@@ -11,7 +11,7 @@ import (
 type (
 	User struct {
 		ID		uuid.UUID `sql:"primary_key;type:uuid;default:uuid_generate_v4()"`
-		FirstName string    `gorm:"type:char[50]"`
+		FirstName string    `gorm:"type:char(50)"`
 		LastName  string	`gorm:"type:char(50)"`
 		Email     string	`gorm:"type:char(150)"`
 		Phone     int		`gorm:"type:int(18)"`
