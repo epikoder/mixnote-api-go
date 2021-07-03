@@ -36,7 +36,14 @@ func init() {
 		}
 
 		// for help commands
-		map_["opt"+strconv.Itoa(i-1)] = val
+		if i == 2 {
+			map_["opt"+strconv.Itoa(1)] = val
+		}
+
+		// For switches
+		if len(val) == 2 && strings.Contains(val, "-") {
+			map_["switches"] += val
+		}
 	}
 }
 
@@ -63,4 +70,8 @@ func (argv ArgHelper) Option(option string) (s string) {
 		panic("Access to commands not allowed from option")
 	}
 	return map_[option]
+}
+
+func (argv ArgHelper) Switch(switch_ string) (bool) {
+	return strings.Contains(map_["switches"], switch_) 
 }
