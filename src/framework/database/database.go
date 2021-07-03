@@ -19,6 +19,8 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 		db, err = connections.MySql().ConnectDB()
 	case "sqlite":
 		db, err = connections.SqLite3().ConnectDB()
+	case "pgsql":
+		db, err = connections.PgSql().ConnectDB()
 	default:
 		utilities.Console().Fatal("Unknown Database connection, Did you configured it?")
 	}
@@ -26,5 +28,6 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 	if err != nil {
 		panic("Error connecting to database")
 	}
+
 	return
 }
