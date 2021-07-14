@@ -2,32 +2,34 @@ package main
 
 import (
 	"fmt"
+	"github.com/mixnote/mixnote-api-go/cmd/helpers"
+	"github.com/mixnote/mixnote-api-go/cmd/migrate"
+	"github.com/mixnote/mixnote-api-go/configs"
+	app "github.com/mixnote/mixnote-api-go/src"
+	"gorm.io/gorm"
 	"os"
 	"strconv"
-
-	"github.com/mixnote/mixnote-api-go/cmd/helper"
-	"github.com/mixnote/mixnote-api-go/cmd/migrate"
-	app "github.com/mixnote/mixnote-api-go/src"
-	"github.com/mixnote/mixnote-api-go/src/framework/database"
-
-	"gorm.io/gorm"
+	"strings"
 )
 
 var DB *gorm.DB
-var argHelper helper.ArgHelper = helper.New()
+var cli = helpers.Cli()
 
-var banner string = `
+var banner string
+var message string
+
+func init() {
+	banner = `
 |\     /|  | \    /  |\      |  /------\ --------   /---
 | \   / |  |   \_/   |  \    |  | |--| |     |     /____|
 |  \/   |  |   / \   |    \  |  | |__| |     |    /-----|
 |       |  |  /    \ |      \|  \______/     |   /_______
 
-Mixnote is a audio platform for streaming, podcast and radio
-@author Efedua Believe @epikoder Github
+` + configs.App.Name + ` is a audio platform for streaming, podcast and radio
 	`
-var message string = `
+	message = `
 usage: 
-mixnote <command> [arguments]
+` + strings.ToLower(configs.App.Name) + ` <command> [arguments]
 
 Commands:
 	serve		Start the server
@@ -36,19 +38,15 @@ Commands:
 	help		Show help message
 	version		Show version information
 	
-Use "mixnote help <command>" for more information about a command.
+Use "` + strings.ToLower(configs.App.Name) + ` help <command>" for more information about a command.
 	`
-
-func init() {
-	DB, _ = database.DBConnection("")
-	app.RegisterBindings(DB)
 	fmt.Println(banner)
 }
 
 func helpServe() {
 	fmt.Println(`
 Usage:
-mixnote serve [argument1] [argument2]
+` + strings.ToLower(configs.App.Name) + ` serve [argument1] [argument2]
 
 arguments: 
 	--host=HOST		Server host default is localhost [127.0.0.1]
@@ -62,15 +60,15 @@ func helpMigrate() {}
 func helpVersion() {}
 
 func main() {
-	cmd := argHelper.Command()
+	cmd := cli.Argument()
 	switch cmd {
 	case "migrate":
 		migrate.Migrate()
 		os.Exit(0)
 
 	case "serve":
-		app.StartServer(argHelper.Option("host"), (func() int {
-			_port := argHelper.Option("port")
+		app.StartServer(cli.Option("host"), (func() int {
+			_port := cli.Option("port")
 			if _port != "" {
 				port, err := strconv.Atoi(_port)
 				if err != nil {
@@ -82,10 +80,10 @@ func main() {
 		})())
 
 	default:
-		if cmd != "help" && len(os.Args) > 1 {
+		if cmd != "help" && cli.ArgsLenght() > 1 {
 			fmt.Println("Unrecognized command : " + os.Args[1])
 		}
-		switch argHelper.Option("opt1") {
+		switch cli.Option("opt1") {
 		case "serve":
 			helpServe()
 		case "test":

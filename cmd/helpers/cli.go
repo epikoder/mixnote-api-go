@@ -1,30 +1,28 @@
-package helper
+package helpers
 
 import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type (
-	icommand interface {
-		Command()
-	}
-
-	ArgHelper struct {
-		icommand
-	}
+	cli struct {}
 )
 
+var once sync.Once
+
 var map_ map[string]string
+var cli_ *cli
 
 func init() {
 	map_ = make(map[string]string)
-	map_["cmd"] = "serve"
+	map_["argv"] = "serve"
 	for i := 1; i < len(os.Args); i++ {
 		val := os.Args[i]
 		if i == 1 {
-			map_["cmd"] = val
+			map_["argv"] = val
 			continue
 		}
 
@@ -47,8 +45,11 @@ func init() {
 	}
 }
 
-func New() (arghelper ArgHelper) {
-	return
+func Cli() (*cli) {
+	once.Do(func ()  {
+		cli_ = new(cli)
+	})
+	return cli_
 }
 
 func stripeOptions(str string) (key string, val string) {
@@ -61,17 +62,21 @@ func stripeOptions(str string) (key string, val string) {
 	return
 }
 
-func (argv *ArgHelper) Command() (s string) {
-	return map_["cmd"]
+func (*cli) Argument() (s string) {
+	return map_["argv"]
 }
 
-func (argv ArgHelper) Option(option string) (s string) {
-	if option == "cmd" {
+func (*cli) Option(option string) (s string) {
+	if option == "argv" {
 		panic("Access to commands not allowed from option")
 	}
 	return map_[option]
 }
 
-func (argv ArgHelper) Switch(switch_ string) (bool) {
+func (*cli) Switch(switch_ string) (bool) {
 	return strings.Contains(map_["switches"], switch_) 
+}
+
+func (*cli) ArgsLenght() int {
+	return len(os.Args)
 }
