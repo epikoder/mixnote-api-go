@@ -14,5 +14,5 @@ func Home() (h *home) {
 }
 
 func (*home) Index(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, "Welcome to " + configs.App().Name)
+	return ctx.JSON(http.StatusOK, "Welcome to " + configs.App.Name)
 }
