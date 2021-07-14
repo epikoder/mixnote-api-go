@@ -30,10 +30,6 @@ func init() {
 	}
 }
 
-func GetRouter() *echo.Echo {
-	return echo_
-}
-
 func Serve(_host string, _port int) {
 	if _host != "" {
 		host = _host

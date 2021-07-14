@@ -7,6 +7,9 @@ import (
 
 func RegisterRoutes(e *echo.Echo) {
 	authGroup := e.Group("auth")
-	authGroup.GET("/login", api_handlers.Auth().LoginEmail).Name = "login"
-	authGroup.GET("/register", api_handlers.Auth().RegisterEmail).Name = "register"
+	authGroup.GET("/login", api_handlers.Auth().LoginEmail).Name = "auth.login"
+	authGroup.GET("/register", api_handlers.Auth().RegisterEmail).Name = "auth.register"
+
+	authGroup = e.Group("billing")
+	authGroup.POST("/customer", api_handlers.Billing().Customer).Name = "billing.customer"
 }
