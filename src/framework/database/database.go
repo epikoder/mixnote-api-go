@@ -11,7 +11,7 @@ import (
 
 func DBConnection(connection string) (db *gorm.DB, err error) {
 	if connection == "" {
-		connection = os.Getenv("DB_CONNECTION")
+		connection = os.Getenv("DB_CONNECTION");
 	}
 
 	switch connection {
@@ -22,7 +22,7 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 	case "pgsql":
 		db, err = connections.PgSql().ConnectDB()
 	default:
-		utilities.Console().Fatal("Unknown Database connection, Did you configured it?")
+		utilities.Console.Fatal("Unknown Database connection :"+ connection)
 	}
 
 	if err != nil {

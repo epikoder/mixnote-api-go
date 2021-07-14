@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	app "github.com/mixnote/mixnote-api-go/src"
+	"github.com/mixnote/mixnote-api-go/configs"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -90,7 +90,7 @@ func SqLite3() (sqlite *sqLite3) {
 		DATABASE_PATH: os.Getenv("DATABASE_PATH"),
 	}
 	if sqlite.DATABASE_PATH == "" {
-		sqlite.DATABASE_PATH = app.DatabasePath()
+		sqlite.DATABASE_PATH = configs.App.DatabasePath
 	}
 	return
 }
