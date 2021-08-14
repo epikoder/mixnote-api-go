@@ -7,7 +7,4 @@ import (
 )
 
 func TestUser(t *testing.T) {
-	// u := user.New()
-	// u.FirstName = "jh"
-	// fmt.Println(u.FirstName)
 }
