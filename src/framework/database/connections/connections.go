@@ -70,15 +70,15 @@ func MySql() (mysql *mySql) {
 	return
 }
 
-func (m *mySql) ConnectDB() (g *gorm.DB,err error) {
+func (m *mySql) ConnectDB() (g *gorm.DB, err error) {
 	dns := (func() string {
 		if m.DATABASE_URL != "" {
 			return m.DATABASE_URL
 		}
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_PORT, m.DB_NAME)
+		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", m.DB_USERNAME, m.DB_PASSWORD, m.DB_HOST, m.DB_PORT, m.DB_NAME)
 	})()
 	g, err = gorm.Open(mysql.New(mysql.Config{
-		DSN: dns,
+		DSN:               dns,
 		DefaultStringSize: 256,
 	}))
 	g.Set("gorm:table_options", "ENGINE=InnoDB")
@@ -132,7 +132,7 @@ func (pg *pgSql) ConnectDB() (*gorm.DB, error) {
 		if pg.PG_DATABASE_URL != "" {
 			return pg.PG_DATABASE_URL
 		}
-		return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", pg.PG_USERNAME, pg.PG_PASSWORD, pg.PG_HOST, pg.PG_PORT, pg.PG_NAME)
+		return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?parseTime=true", pg.PG_USERNAME, pg.PG_PASSWORD, pg.PG_HOST, pg.PG_PORT, pg.PG_NAME)
 	})()
 	return gorm.Open(postgres.Open(dns))
 }
