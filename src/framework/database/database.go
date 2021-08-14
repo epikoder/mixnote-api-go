@@ -8,10 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-
-func DBConnection(connection string) (db *gorm.DB, err error) {
-	if connection == "" {
-		connection = os.Getenv("DB_CONNECTION");
+func DBConnection(connection interface{}) (db *gorm.DB, err error) {
+	if connection == "" || connection == nil {
+		connection = os.Getenv("DB_CONNECTION")
 	}
 
 	switch connection {
@@ -22,11 +21,11 @@ func DBConnection(connection string) (db *gorm.DB, err error) {
 	case "pgsql":
 		db, err = connections.PgSql().ConnectDB()
 	default:
-		utilities.Console.Fatal("Unknown Database connection :"+ connection)
+		utilities.Console.Fatal("Unknown Database connection :" + connection.(string))
 	}
 
 	if err != nil {
-		panic("Error connecting to database")
+		utilities.Console.Fatal("Error connecting to database")
 	}
 
 	return

@@ -29,6 +29,9 @@ func (c *createRoleTable) Up() (err error) {
 
 func (c *createRoleTable) Down() error {
 	if c.DB.Migrator().HasTable("roles") {
+		c.DB.Migrator().DropTable("user_permissions")
+		c.DB.Migrator().DropTable("user_roles")
+		c.DB.Migrator().DropTable("role_permissions")
 		c.DB.Migrator().DropTable(&models.Permission{})
 		return c.DB.Migrator().DropTable(&models.Role{})
 	}
