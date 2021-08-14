@@ -6,5 +6,7 @@ import (
 )
 
 func RegisterRoutes(e *echo.Echo) {
-	e.GET("", handlers.Home().Index)
+	e.GET("/home", handlers.Home().Index)
+	e.Static("/static", "public/assets")
+	e.File("/", "public/views/index.html")
 }
