@@ -13,11 +13,12 @@ var BLUE string = "\033[34m"
 var CYAN string = "\033[36m"
 var colorRESET string = "\033[0m"
 
-var once sync.Once
-var Console *console
+var (
+	once    sync.Once
+	Console *console
+)
 
-type console struct {}
-
+type console struct{}
 
 func init() {
 	once.Do(func() {
@@ -26,7 +27,7 @@ func init() {
 }
 
 func (*console) Print(s string, a ...interface{}) {
-	fmt.Print(fmt.Sprintf(s, a...))
+	fmt.Printf(s, a...)
 }
 
 func (*console) Printc(s string, color string, a ...interface{}) {
@@ -44,18 +45,28 @@ func (*console) Warn(s string, a ...interface{}) {
 	fmt.Println(YELLOW, fmt.Sprintf(s, a...), colorRESET)
 }
 
+func (*console) Debug(s string, a ...interface{}) {
+	fmt.Println(BLUE, "DEBUG : ", YELLOW, fmt.Sprintf(s, a...), colorRESET)
+}
+
 func (*console) Error(s string, a ...interface{}) {
-	fmt.Println(RED, fmt.Sprintf(s, a...), colorRESET)
+	fmt.Println(RED, "ERROR : ", YELLOW, fmt.Sprintf(s, a...), colorRESET)
 }
 
 func (*console) Success(s string, a ...interface{}) {
 	fmt.Println(GREEN, fmt.Sprintf(s, a...), colorRESET)
 }
 
-func (*console) Fatal(s interface{})  {
-	log.Fatal(RED, s, colorRESET)
+func (*console) Fatal(s ...interface{}) {
+	var m string
+	m = s[0].(string)
+	if len(s) > 1 {
+		f := s[0].(string)
+		var i []interface{}
+		for x := 1; x < len(s); x++ {
+			i = append(i, s[x])
+		}
+		m = fmt.Sprintf(f, i...)
+	}
+	log.Panic(RED, "ERROR : ", YELLOW, m, colorRESET)
 }
-
-func (*console) Log(s string, a ...interface{}) {
-	fmt.Println(BLUE, fmt.Sprintf(s, a...), colorRESET)
-} 
