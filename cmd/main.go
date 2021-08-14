@@ -1,15 +1,18 @@
 package main
 
 import (
+	"crypto/ecdsa"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/mixnote/mixnote-api-go/cmd/helpers"
 	"github.com/mixnote/mixnote-api-go/cmd/migrate"
 	"github.com/mixnote/mixnote-api-go/configs"
 	app "github.com/mixnote/mixnote-api-go/src"
+	"github.com/mixnote/mixnote-api-go/src/framework/utilities"
 	"gorm.io/gorm"
-	"os"
-	"strconv"
-	"strings"
 )
 
 var DB *gorm.DB
@@ -60,6 +63,26 @@ func helpMigrate() {}
 func helpVersion() {}
 
 func main() {
+	// Setup
+	if sec := os.Getenv("JWT_SECRET"); sec == "" {
+		var err error
+		var secret *ecdsa.PrivateKey
+
+		utilities.Console.Warn("JWT secret not found.. creating secret")
+		if secret, err = utilities.Crypto.KeyGen(); err != nil {
+			utilities.Console.Fatal(err)
+		}
+		privKey, _, err := utilities.Crypto.PemKeyPair(secret)
+		if err != nil {
+			utilities.Console.Fatal(err)
+		}
+
+		utilities.Env.Write(map[string]string{
+			"JWT_SECRET": string(privKey),
+		})
+		utilities.Console.Success("JWT secret created successfully")
+	}
+
 	cmd := cli.Argument()
 	switch cmd {
 	case "migrate":

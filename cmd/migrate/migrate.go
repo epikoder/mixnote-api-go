@@ -26,14 +26,14 @@ func Migrate() {
 	//Initialize
 	db, _ = database.DBConnection(conn)
 	migrations_ = map[string]migrations.IMigrations{
-		"users": migrations.CreateUserTable(db),
-		"roles": migrations.CreateRoleTable(db),
+		"users":   migrations.CreateUserTable(db),
+		"roles":   migrations.CreateRoleTable(db),
 		"artists": migrations.CreateArtistTable(db),
-		"albums": migrations.CreateAlbumTable(db),
-		"songs": migrations.CreateSongTable(db),
+		"albums":  migrations.CreateAlbumTable(db),
+		"songs":   migrations.CreateSongTable(db),
 	}
 	///
-	
+
 	if model != "" {
 		m_ := migrations_[model]
 		if m_ == nil {
@@ -45,9 +45,9 @@ func Migrate() {
 			if err := m_.Down(); err != nil {
 				utilities.Console.Error("Unable to drop table for model " + model)
 				utilities.Console.Fatal(err)
-			} 
+			}
 			utilities.Console.Success("Table " + model + " status: " + strconv.FormatBool(db.Migrator().HasTable(model)))
-		}		
+		}
 
 		if db.Migrator().HasTable(model) {
 			utilities.Console.Warn("Nothing to migrate. Use '--model=%s -R -C' -R:rollback -C:create to reset table", model)
@@ -73,6 +73,9 @@ func Migrate() {
 
 	if bRollback {
 		dropTables()
+		if bCreate {
+			createTables()
+		}
 		os.Exit(0)
 	}
 
@@ -85,16 +88,17 @@ func dropTables() {
 			utilities.Console.Fatal(err)
 		}
 	}
-	utilities.Console.Log("Dropped all tables successfully")
+	utilities.Console.Println("Dropped all tables successfully")
 }
 
 func createTables() {
 	mi := 0
 	for key, m_ := range migrations_ {
 		if db.Migrator().HasTable(key) {
-			utilities.Console.Log("Skipping %s", key)
+			utilities.Console.Println("Skipping %s", key)
 			continue
 		}
+
 		utilities.Console.Warn("Migrating:: table for model " + key)
 		if err := m_.Up(); err != nil {
 			utilities.Console.Fatal(err)
