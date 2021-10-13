@@ -67,12 +67,14 @@ func Migrate() {
 
 	if bReset {
 		dropTables()
+		if db.Migrator().HasTable("users") {dropTables()}
 		createTables()
 		os.Exit(0)
 	}
 
 	if bRollback {
 		dropTables()
+		if db.Migrator().HasTable("users") {dropTables()}
 		if bCreate {
 			createTables()
 		}
@@ -83,7 +85,8 @@ func Migrate() {
 }
 
 func dropTables() {
-	for _, m_ := range migrations_ {
+	for key, m_ := range migrations_ {
+		utilities.Console.Debug("Dropping table: " + key)
 		if err := m_.Down(); err != nil {
 			utilities.Console.Fatal(err)
 		}
@@ -94,7 +97,7 @@ func dropTables() {
 func createTables() {
 	mi := 0
 	for key, m_ := range migrations_ {
-		if db.Migrator().HasTable(key) {
+		if db.Migrator().HasTable(key) && !bReset {
 			utilities.Console.Println("Skipping %s", key)
 			continue
 		}

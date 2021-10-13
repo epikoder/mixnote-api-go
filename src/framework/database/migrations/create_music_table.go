@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"github.com/mixnote/mixnote-api-go/src/core/models"
 	music_models "github.com/mixnote/mixnote-api-go/src/music/model"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,6 @@ type (
 		DB *gorm.DB
 	}
 )
-
 
 func CreateArtistTable(db *gorm.DB) (c *createArtistTable) {
 	c = &createArtistTable{
@@ -41,7 +41,6 @@ func CreateSongTable(db *gorm.DB) (c *createSongTable) {
 	return
 }
 
-
 func (c *createArtistTable) Up() error {
 	return c.DB.Migrator().AutoMigrate(&music_models.Artist{})
 }
@@ -51,10 +50,17 @@ func (c *createAlbumTable) Up() error {
 }
 
 func (c *createSongTable) Up() error {
-	return c.DB.Migrator().AutoMigrate(&music_models.Song{})
+	if err := c.DB.Migrator().AutoMigrate(&music_models.Song{}); err != nil {
+		return err
+	}
+	if err := c.DB.SetupJoinTable(models.User{}, "Interactions", music_models.UserInteraction{}); err != nil {
+		return err
+	}
+	if !c.DB.Migrator().HasTable("user_interactions") {
+		CreateUserTable(c.DB).Up()
+	}
+	return _addColumnsToTable(c.DB, music_models.UserInteraction{}, "liked")
 }
-
-
 
 func (c *createArtistTable) Down() error {
 	return c.DB.Migrator().DropTable(&music_models.Artist{})
@@ -65,5 +71,11 @@ func (c *createAlbumTable) Down() error {
 }
 
 func (c *createSongTable) Down() error {
+	if c.DB.Migrator().HasTable("user_interactions") {
+		if err := c.DB.Migrator().DropTable(music_models.UserInteraction{}); err != nil {
+			return err
+		}
+	}
 	return c.DB.Migrator().DropTable(&music_models.Song{})
 }
+

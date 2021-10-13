@@ -23,6 +23,16 @@ func (c *createUserTable) Up() error {
 	if err := c.DB.Migrator().AutoMigrate(&models.UserCredential{}); err != nil {
 		return err
 	}
+
+	if err := c.DB.Migrator().AutoMigrate(&models.UserActivities{}); err != nil {
+		return err
+	}
+	if err := c.DB.Migrator().AutoMigrate(&models.AccessLog{}); err != nil {
+		return err
+	}
+	if err := c.DB.Migrator().AutoMigrate(&models.Transaction{}); err != nil {
+		return err
+	}
 	return c.DB.Migrator().AutoMigrate(&models.UserBillingInformation{})
 }
 
@@ -35,6 +45,12 @@ func (c *createUserTable) Down() error {
 
 	if c.DB.Migrator().HasTable("user_billing_informations") {
 		if err := c.DB.Migrator().DropTable(&models.UserBillingInformation{}); err != nil {
+			return err
+		}
+	}
+
+	if c.DB.Migrator().HasTable("user_activities") {
+		if err := c.DB.Migrator().DropTable(&models.UserActivities{}); err != nil {
 			return err
 		}
 	}
