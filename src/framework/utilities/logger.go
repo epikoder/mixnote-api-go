@@ -35,7 +35,7 @@ func (*logger) HandleError(err error) (ok bool) {
 
 	if err != nil {
 		pc, fn, line, _ := runtime.Caller(1)
-		log.Println(RED, "[ERROR]", YELLOW, fmt.Sprintf(" in %s[%s:%d] %v", runtime.FuncForPC(pc).Name(), fn, line, err), colorRESET)
+		log.Println(RED, "[ERROR]", YELLOW, fmt.Sprintf(" in %s [ %s:%d ] %v", runtime.FuncForPC(pc).Name(), fn, line, err), colorRESET)
 		return false
 	}
 	return true

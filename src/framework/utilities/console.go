@@ -59,7 +59,11 @@ func (*console) Success(s string, a ...interface{}) {
 
 func (*console) Fatal(s ...interface{}) {
 	var m string
-	m = s[0].(string)
+	m, ok := s[0].(string)
+	if !ok {
+		e := s[0].(error)
+		log.Panic(RED, "ERROR : ", YELLOW, e.Error(), colorRESET)
+	}
 	if len(s) > 1 {
 		f := s[0].(string)
 		var i []interface{}
