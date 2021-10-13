@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+var (
+	defaultMemory = 33554432
+)
+
 func getFromJson(i interface{}, r *http.Request) (err error) {
 	if reflect.TypeOf(i).Kind() != reflect.Ptr {
 		return fmt.Errorf("non pointer value given")
@@ -28,7 +32,6 @@ func getFromForm(i interface{}, r *http.Request) (err error) {
 		return fmt.Errorf("non pointer value given")
 	}
 	r.ParseForm()
-	(*(i.(*FormVar))) = make(FormVar)
 	for k, v := range r.Form {
 		if strings.HasPrefix(k, "{") {
 			return fmt.Errorf("wrong content-type header %s. Use %s instead", applicationURLEncode, applicationJSON)
@@ -36,6 +39,16 @@ func getFromForm(i interface{}, r *http.Request) (err error) {
 		(*(i.(*FormVar)))[k] = v[0]
 	}
 	return
+}
+
+func getFormData(i interface{}, r *http.Request) error {
+	if reflect.TypeOf(i).Kind() != reflect.Ptr {
+		return fmt.Errorf("non pointer value given")
+	}
+	if err :=  r.ParseMultipartForm(int64(defaultMemory)); err != nil {
+		return err
+	}
+	return nil
 }
 
 func getRuleFunc(rule string) (ruleFunc, error) {
@@ -53,8 +66,17 @@ func getRuleFunc(rule string) (ruleFunc, error) {
 	return rf, nil
 }
 
+func getFileRuleFunc(rule string) (fileFunc, error) {
+	fF, ok := fileMapRules[rule]
+	if !ok {
+		return nil, fmt.Errorf("rule %s not found", rule)
+	}
+	return fF, nil
+}
 
 func readStringFromPtr(v interface{}) (string, bool) {
 	s, ok := (*(v.(*interface{}))).(string)
+	s = strings.TrimSpace(s)
+	(*(v.(*interface{}))) = s
 	return s, ok
 }
