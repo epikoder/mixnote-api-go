@@ -35,21 +35,36 @@ func Set(key string, val interface{}, expires time.Duration) *redis.StatusCmd {
 
 func Get(key string) (string, error) {
 	defer ctx.Done()
-	return _redis.Get(ctx, key).Result()
+	s, err := _redis.Get(ctx, key).Result()
+	if err != nil && err != redis.Nil {
+		return "", err
+	}
+	return s, nil
+}
+
+func Pull(key string) (string, error) {
+	defer ctx.Done()
+	s, err := _redis.GetDel(ctx, key).Result()
+	if err != nil && err != redis.Nil {
+		return "", err
+	}
+	return s, nil
 }
 
 func Exist(key string) bool {
 	defer ctx.Done()
 	_, err := _redis.Get(ctx, key).Result()
-	if err == redis.Nil{
+	if err != nil && err != redis.Nil {
 		return false
-	} else if err != nil {
-		utilities.Console.Fatal(err)
 	}
 	return true
 }
 
-func Forget() {}
+func Forget(key string) error {
+	defer ctx.Done()
+	_, err := _redis.Del(ctx, key).Result()
+	return err
+}
 
 func Forever() {}
 
